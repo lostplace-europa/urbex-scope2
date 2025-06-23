@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urbex Scope – Lost Places Europa</title>
+  <meta name="description" content="Urbex Scope ist dein Kompass zu den geheimnisvollsten Lost Places Europas.">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9584980650144627" crossorigin="anonymous"></script>
+  <style>
+    body { margin:0; font-family:'Unbounded',sans-serif; background:#0a0a0a; color:#fff; }
+    nav { position:fixed; top:0; width:100%; background:rgba(0,0,0,0.85); padding:1rem; display:flex; justify-content:center; gap:2rem; z-index:1000; }
+    nav a { color:#fff; text-decoration:none; font-weight:500; }
+    nav a:hover { color:#ffcc00; }
+    .hero { height:100vh; background:linear-gradient(to bottom,rgba(0,0,0,0.6),rgba(10,10,10,0.9)),url('lostplaces_bg.jpg') center/cover no-repeat; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 20px; }
+    .glass { background:rgba(255,255,255,0.1); border-radius:16px; padding:30px; backdrop-filter:blur(10px); }
+    .hero h1 { font-size:3rem; color:#ffcc00; max-width:800px; margin-bottom:20px; }
+    .btn { background:#ffcc00; color:#000; padding:12px 30px; border:none; border-radius:30px; font-size:1rem; font-weight:bold; text-transform:uppercase; cursor:pointer; box-shadow:0 0 20px rgba(255,204,0,0.4); transition:transform 0.3s, box-shadow 0.3s; }
+    .btn:hover { transform:scale(1.05); box-shadow:0 0 40px rgba(255,204,0,0.7); }
+    .flag-counter { margin-top:20px; }
+    footer { padding:30px 20px; text-align:center; background:#000; font-size:0.9rem; color:#777; }
+    footer a { color:#999; text-decoration:none; margin:0 10px; }
+    footer a:hover { color:#ffcc00; }
+    #mapModal { display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.95); z-index:2000; }
+    #karte { width:100%; height:100%; }
+    .close-btn { position:absolute; top:20px; right:30px; background:#222; color:#fff; border:none; font-size:24px; padding:10px 15px; cursor:pointer; border-radius:6px; z-index:2100; }
+    .style-switcher { position:absolute; top:20px; left:50%; transform:translateX(-50%); z-index:2100; background:rgba(20,20,20,0.85); padding:8px 12px; border-radius:8px; color:#fff; font-size:0.9rem; }
+    .style-switcher select { background:#111; color:#fff; border:none; padding:6px 10px; border-radius:6px; }
+    .urbex-popup .leaflet-popup-content-wrapper { background: #2b2b2b; color: #f0f0f0; border: 2px solid #FFD700; border-radius: 8px; padding: 10px; }
+    .urbex-popup .leaflet-popup-tip { background: #2b2b2b; border: 2px solid #FFD700; }
+    .popup-title { font-size: 1.2em; font-weight: bold; color: #FFD700; margin-bottom: 0.2em; }
+    .popup-subtitle { font-size: 0.9em; color: #ccc; margin-bottom: 0.5em; }
+    .popup-description { font-size: 0.95em; line-height: 1.4; margin-bottom: 0.5em; }
+    .popup-tags { display: flex; flex-wrap: wrap; gap: 0.5em; }
+    .popup-tag { display: inline-block; padding: 2px 6px; font-size: 0.85em; border-radius: 4px; background: #555; color: #fff; }
+    .difficulty-easy { background: #4CAF50; }
+    .difficulty-medium { background: #FB8C00; }
+    .difficulty-hard { background: #E53935; }
+    .access-open { background: #4CAF50; }
+    .access-closed { background: #E53935; }
+    .popup-tag i { margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <nav><a href="zone.html">Zone</a><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
+  <div class="hero">
+    <div class="glass">
+      <h1>Entdecke die geheimsten Lost Places Europas</h1>
+      <button class="btn" onclick="showMap()">Jetzt Lost Places entdecken 🗺️</button>
+      <div class="flag-counter">
+        <a href="https://info.flagcounter.com/R2gS" target="_blank">
+          <img src="https://s01.flagcounter.com/count2/R2gS/bg_C2C2C2/txt_000000/border_000000/columns_3/maxflags_12/viewers_0/labels_1/pageviews_1/flags_1/percent_0/" alt="Besucherzähler mit Länderflaggen" border="0">
+        </a>
+      </div>
+    </div>
+  </div>
+  <footer><div><a href="Impressum.html">Impressum</a> · <a href="Datenschutz.html">Datenschutz</a></div></footer>
+  <div id="mapModal">
+    <div class="style-switcher">
+      <select onchange="switchMapStyle(this.value)">
+        <option value="dark">🌑 Dunkel</option>
+        <option value="light">🌕 Hell</option>
+      </select>
+    </div>
+    <div id="karte"></div>
+    <button class="close-btn" onclick="closeMapModal()">×</button>
+  </div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+  <script>
+    let map, markerCluster, currentLayer;
+    const layers = {
+      dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap-Mitwirkende & CartoDB'}),
+      light: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap-Mitwirkende'})
+    };
+    function showMap() {
+      document.getElementById('mapModal').style.display = 'block';
+      if (!map) initMap();
+      else map.invalidateSize();
+    }
+    function closeMapModal() {
+      document.getElementById('mapModal').style.display = 'none';
+    }
+    function initMap() {
+      map = L.map('karte').setView([51.1657,10.4515],6);
+      currentLayer = layers.dark.addTo(map);
+      markerCluster = L.markerClusterGroup();
+      fetch('orte.json')
+        .then(res => res.json())
+        .then(places => {
+          places.forEach(p => {
+            let schwierigkeit = (p.schwierigkeit || 'unbekannt').toLowerCase();
+            let zugang = (p.zugang || 'unbekannt').toLowerCase();
+            let schwierigkeitClass = schwierigkeit === 'leicht' ? 'difficulty-easy' : (schwierigkeit === 'mittel' ? 'difficulty-medium' : 'difficulty-hard');
+            let zugangClass = zugang.includes('offen') ? 'access-open' : 'access-closed';
+            let popupContent = `<div class="popup-content"><h3 class="popup-title">${p.name}</h3><div class="popup-subtitle">${p.ort}, ${p.land} &bull; ${p.category}</div><p class="popup-description">${p.beschreibung}</p><div class="popup-tags"><span class="popup-tag ${schwierigkeitClass}">${p.schwierigkeit}</span><span class="popup-tag ${zugangClass}"><i class="fas ${zugangClass==='access-open'?'fa-unlock':'fa-lock'}"></i> ${p.zugang}</span></div></div>`;
+            L.marker([p.lat, p.lng]).bindPopup(popupContent, { className: 'urbex-popup', maxWidth: 400 }).addTo(markerCluster);
+          });
+          map.addLayer(markerCluster);
+        });
+    }
+    function switchMapStyle(style) {
+      if(currentLayer) map.removeLayer(currentLayer);
+      currentLayer = layers[style].addTo(map);
+    }
+  </script>
+</body>
+</html>

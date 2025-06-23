@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meldeportal</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <h1>Neuen Lost Place melden</h1>
+  <form id="reportForm">
+    <input type="text" id="name" placeholder="Name des Ortes" required>
+    <textarea id="description" placeholder="Beschreibung" required></textarea>
+    <input type="number" id="lat" placeholder="Breitengrad" required>
+    <input type="number" id="lng" placeholder="Längengrad" required>
+    <button type="submit">Melden</button>
+  </form>
+  <script type="module" src="js/meldeportal.js"></script>
+</body>
+</html>
